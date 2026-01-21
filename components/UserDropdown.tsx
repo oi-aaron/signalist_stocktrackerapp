@@ -12,13 +12,16 @@ import { Button } from "./ui/button";
 import { useRouter } from "next/navigation";
 import { LogOut } from "lucide-react";
 import NavItems from "./NavItems";
+import { signOut } from "@/lib/actions/auth.actions";
 
-const UserDropdown = () => {
+const UserDropdown = ({user} : { user: User }) => {
     const router = useRouter();
+    
     const handleSignout = async () => {
-        router.push("sign-in");
+        await signOut();
+        router.push("/sign-in");
     }
-    const user = { name : 'John', email: "contact@jsmastery.com"};
+    
 
   return (
     <DropdownMenu>
@@ -28,12 +31,12 @@ const UserDropdown = () => {
                     {/*<AvatarImage src="https://github.com/shadcn.png" />*/}
                     
                     <AvatarFallback className="bg-yellow-500 text-yellow-900 text-sm font-bold">
-                        {user.name[0]}
+                        {user?.name?.[0] || 'U'}
                     </AvatarFallback>
                 </Avatar>
                 <div className="hidden md:flex flex-col items-start">
                     <span className="text-base font-medium text-gray-400">
-                        {user.name}
+                        {user?.name || 'User'}
                     </span>
                 </div>
             </Button>
@@ -45,15 +48,15 @@ const UserDropdown = () => {
                     {/*<AvatarImage src="https://github.com/shadcn.png" />*/}
                     
                     <AvatarFallback className="bg-yellow-500 text-yellow-900 text-sm font-bold">
-                        {user.name[0]}
+                        {user?.name?.[0] || 'U'}
                     </AvatarFallback>
                 </Avatar>
                 <div className="flex flex-col">
                     <span className="text-base font-medium text-gray-400">
-                        {user.name}
+                        {user?.name || 'User'}
                     </span>
                     <span className="text-sm text-gray-500">
-                        {user.email}
+                        {user?.email || ''}
                     </span>
                 </div>
 
