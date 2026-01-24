@@ -39,15 +39,29 @@ export const getAllUsersForNewsEmail = async (): Promise<UserForNewsEmail[]> => 
 
     let userCollectionName: string | null = null;
 
-    // 🧠 Detect the user collection by presence of an email field
-    for (const col of collections) {
-      const hasEmail = await db.collection(col.name).findOne({
-        email: { $exists: true, $ne: null },
-      });
+    const preferred = process.env.USER_COLLECTION_NAME;
+    if (preferred && collections.some((c) => c.name === preferred)) {
+      userCollectionName = preferred;
+    } else {
+      const commonNames = ["users", "user", "accounts", "account", "profiles"];
+      const commonMatch = commonNames.find((name) =>
+        collections.some((c) => c.name === name)
+      );
+      if (commonMatch) userCollectionName = commonMatch;
+    }
 
-      if (hasEmail) {
-        userCollectionName = col.name;
-        break;
+    // 🧠 Detect the user collection by presence of an email field
+    if (!userCollectionName) {
+      for (const col of collections) {
+        const hasEmail = await db.collection(col.name).findOne(
+          { email: { $exists: true, $ne: null } },
+          { projection: { _id: 1 } }
+        );
+
+        if (hasEmail) {
+          userCollectionName = col.name;
+          break;
+        }
       }
     }
 
